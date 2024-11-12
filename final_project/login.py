@@ -1,3 +1,5 @@
+from tools_for_ecommerce import *
+
 def login_page():
     print_banner()
     print('\n')

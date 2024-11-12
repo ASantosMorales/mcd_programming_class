@@ -1,5 +1,6 @@
 from tools_for_ecommerce import *
 from login import *
+from home import *
 
 while True:
     os.system('clear')
