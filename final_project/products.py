@@ -47,17 +47,3 @@ def validate_products_input(input_str):
     else:
         validation = False
     return (validation)
-
-def validate_products_quantity(input_quantity):
-    pattern = r'^\d+$'
-    if re.match(pattern, input_quantity):
-        validation = True
-    else:
-        validation = False
-    return (validation)
-
-def validate_inventory(input_quantity, inventory_quantity):
-    inventory_ok = False
-    if input_quantity <= inventory_quantity:
-        inventory_ok = True
-    return (inventory_ok)

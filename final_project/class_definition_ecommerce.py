@@ -39,25 +39,30 @@ class user_shopping_cart:
     def __init__(self):
         self.last_event_shopping_cart = None
         self.record = []
+        self.list_of_event_product_quantities = []
         self.list_of_event_price_with_discounts = []
         self.list_of_event_discount_amounts = []
-        self.total_shopping_cart_products = None
+        self.total_shopping_cart_products_quantity = None
         self.total_shopping_cart_amount = None
         self.total_shopping_cart_discount_applied_amount = None
     
     def add_last_shopping_cart_event_to_record(self, last_event_shopping_cart):
         self.last_event_shopping_cart = last_event_shopping_cart
+        self.list_of_event_product_quantities.append(self.last_event_shopping_cart.quantity)
         self.list_of_event_price_with_discounts.append(self.last_event_shopping_cart.event_price_with_discount)
         self.list_of_event_discount_amounts.append(self.last_event_shopping_cart.event_discount_amount)
+        self.total_shopping_cart_products_quantity = sum(self.list_of_event_product_quantities)
         self.total_shopping_cart_amount = sum(self.list_of_event_price_with_discounts)
         self.total_shopping_cart_discount_applied_amount = sum(self.list_of_event_discount_amounts)
         self.record.append(self.last_event_shopping_cart)
     
     def remove_specific_shopping_cart_record_index(self, index):
         index = index - 1 # Python list offset
+        del self.list_of_event_product_quantities[index]
         del self.list_of_event_price_with_discounts[index]
         del self.list_of_event_discount_amounts[index]
         del self.record[index]
+        self.total_shopping_cart_products_quantity = sum(self.list_of_event_product_quantities)
         self.total_shopping_cart_amount = sum(self.list_of_event_price_with_discounts)
         self.total_shopping_cart_discount_applied_amount = sum(self.list_of_event_discount_amounts)
 
