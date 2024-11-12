@@ -1,3 +1,6 @@
+from tools_for_ecommerce import *
+from login import active_user
+
 def payment_confirmation_page(payment_method):
     inventory_update()
     user_cart_update()
@@ -30,8 +33,8 @@ def random_payment_link_generator(payment_method):
 
 def inventory_update():
     current_user_id = active_user(users)
-    for shopping_cart in users[current_user_id].cart:
-        products[shopping_cart.product_id].purchasing(shopping_cart.quantity)
+    for shopping_cart in users[current_user_id].cart.record:
+        products_dict[shopping_cart.product_id].purchasing(shopping_cart.quantity)
 
 def user_cart_update():
     current_user_id = active_user(users)

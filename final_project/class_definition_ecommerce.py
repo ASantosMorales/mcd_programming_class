@@ -1,3 +1,5 @@
+from datetime import datetime
+
 # ******* Classes definition ************
 class product:
     def __init__(self, regular_price, inventory, discount_percentage):
@@ -67,8 +69,6 @@ class user_shopping_cart:
         self.total_shopping_cart_discount_applied_amount = sum(self.list_of_event_discount_amounts)
 
 class user_history:
-    def __init__(self, timestamp, full_shopping_cart_sold, total_amount_in_shopping_cart, total_discount_applied_in_shopping_cart):
+    def __init__(self, timestamp, full_shopping_cart_sold):
         self.timestamp = timestamp
         self.full_shopping_cart_sold = full_shopping_cart_sold
-        self.total_amount_in_shopping_cart = total_amount_in_shopping_cart
-        self.total_discount_applied_in_shopping_cart = total_discount_applied_in_shopping_cart

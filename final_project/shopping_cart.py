@@ -1,6 +1,7 @@
 from tools_for_ecommerce import *
 from products import *
 from login import active_user
+from checkout import checkout_page
 
 def adding_to_cart(user_choice):
     print('\n')
@@ -64,7 +65,7 @@ def cart_cover_page():
     current_user_entered_name = users[current_user_id].entered_name
     print_centered(f'This is your shopping cart {current_user_entered_name}')
     print('\n')
-    print_user_cart_table(users[current_user_id])
+    print_user_shopping_cart_table(users[current_user_id])
     print('\n')
     print_centered('Type an option:')
     print('\n')
@@ -73,7 +74,7 @@ def cart_cover_page():
     print(identation * ' ' + '3. ' + colored('Go to home', 'red'))
     print('\n')
 
-def print_user_cart_table(current_user):
+def print_user_shopping_cart_table(current_user):
     headers = ['Ref', 'Quantity', 'Product', 'Unit price', '% Discount', 'Final price']
     table = []
     index = 1
