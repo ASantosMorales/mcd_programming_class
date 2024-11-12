@@ -15,11 +15,6 @@ def adding_to_cart(user_choice):
         if (validate_products_quantity(quantity_to_cart)):
             quantity_to_cart = int(quantity_to_cart)
             if (validate_inventory(quantity_to_cart, inventory)):
-                """
-                total_price_with_discount = round(quantity_to_cart * products[item_user_choice].price_with_discount, 2)
-                total_discount_amount = round(quantity_to_cart * products[item_user_choice].discount_amount, 2)
-                adding_to_cart_transaction(quantity_to_cart, item_user_choice, products[item_user_choice].price, products[item_user_choice].discount, total_price_with_discount, total_discount_amount)
-                """
                 adding_to_cart_transaction(quantity_to_cart, product_id_user_choice)
                 print('\n')
                 print_centered(f'You added {quantity_to_cart} bottles of Tequila {product_id_user_choice} to your cart.')
@@ -34,12 +29,14 @@ def adding_to_cart(user_choice):
             invalid_option()
 
 def adding_to_cart_transaction(quantity, product_id):
+    current_user_id = active_user(users)
     regular_price = products_dict[product_id].regular_price
     discount_percentage = products_dict[product_id].discount_percentage
-    event_price_with_discount = quantity * products_dict[product_id].price_with_discount
-    event_discount_amount = quantity * products_dict[product_id].discount_amount
-    temporal_event_shopping_cart = event_shopping_cart(quantity, product_id, regular_price, discount_percentage, event_price_with_discount, event_discount_amount)
-    specific_user_shopping_cart.add_last_shopping_cart_event_to_record(temporal_event_shopping_cart)
+    net_amount = quantity * products_dict[product_id].price_with_discount
+    discounted_amount = quantity * products_dict[product_id].discount_amount
+    if (users[current_user_id].shopping_cart == None):
+        users[current_user_id].shopping_cart = shopping_cart()
+    users[current_user_id].shopping_cart.add_articles_to_shopping_cart(quantity, product_id, regular_price, discount_percentage, net_amount, discounted_amount)
 
 def cart_page():
     while True:
@@ -78,18 +75,20 @@ def print_user_shopping_cart_table(current_user):
     headers = ['Ref', 'Quantity', 'Product', 'Unit price', '% Discount', 'Final price']
     table = []
     index = 1
-    for shopping_cart in current_user.cart.record:
+    for shopping_cart_index in range(get_rows_number_in_shopping_cart(users[current_user])):
         table.append([f'{index}', \
-                    f'{shopping_cart.quantity}', \
-                    f'Tequila_{shopping_cart.product_id}', \
-                    f'$ {(products_dict[shopping_cart.product_id].regular_price):.2f}', \
-                    f'{shopping_cart.discount_percentage} %', \
-                    f'$ {shopping_cart.event_price_with_discount:.2f}'])
+                    f'{users[current_user].shopping_cart.quantity[shopping_cart_index]}', \
+                    f'Tequila_{users[current_user].shopping_cart.product_id[shopping_cart_index]}', \
+                    f'$ {users[current_user].shopping_cart.regular_price[shopping_cart_index]:.2f}', \
+                    f'{users[current_user].shopping_cart.discount_percentage[shopping_cart_index]} %', \
+                    f'$ {users[current_user].shopping_cart.net_amount[shopping_cart_index]:.2f}'])
         index += 1
     print(tabulate(table, headers, tablefmt = 'simple', stralign = 'center', numalign = 'center'))
     print('\n')
     print(18 * ' '+ 'Summary:')
-    print(tabulate([[f'Total products:  {current_user.cart.total_shopping_cart_products_quantity}'], [f'Total price (discount applied):  $ {current_user.cart.total_shopping_cart_amount:.2f}'], [f'Total discount applied:  $ {current_user.cart.total_shopping_cart_discount_applied_amount:.2f}']]))
+    print(tabulate([[f'Total products:  {users[current_user].shopping_cart.total_shopping_cart_products_quantity}'], \
+        [f'Total price (discount applied):  $ {users[current_user].shopping_cart.total_shopping_cart_amount:.2f}'], \
+        [f'Total discount applied:  $ {users[current_user].shopping_cart.total_shopping_cart_discount_applied_amount:.2f}']]))
 
 def edit_cart_section():
     print('\n')
@@ -126,10 +125,26 @@ def user_cart_row_deletion(current_user_id, edit_cart_user_choice):
 
 def removing_event_from_cart_transaction(current_user_id, edit_cart_user_choice):
     users[current_user_id].cart.remove_specific_shopping_cart_record_index(edit_cart_user_choice)
-    
 
-def get_rows_number_in_cart(current_user_id):
-    return (len(users[current_user_id].cart.record))
+def get_rows_number_in_shopping_cart(current_user):
+    return (len(current_user.shopping_cart.quantity))
+
+def retreive_shopping_cart_data_by_index(shopping_cart_row, index):
+    if (shopping_cart_row.quantity == []):
+        quantity = 0
+        product_id = 0
+        regular_price = 0
+        discount_percentage = 0
+        net_amount = 0
+        discounted_amount = 0
+    else:
+        quantity = shopping_cart_row.quantity[index]
+        product_id = shopping_cart_row.product_id[index]
+        regular_price = shopping_cart_row.regular_price[index]
+        discount_percentage = shopping_cart_row.discount_percentage[index]
+        net_amount = shopping_cart_row.net_amount[index]
+        discounted_amount = shopping_cart_row.discounted_amount[index]
+    return (quantity, product_id, regular_price, discount_percentage, net_amount, discounted_amount)
 
 #******************************
 #
