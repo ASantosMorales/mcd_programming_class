@@ -7,6 +7,7 @@ import re
 import numpy as np
 from termcolor import colored
 from tabulate import tabulate
+from class_definition_ecommerce import *
 
 def print_centered(text):
     if len(text) > total_margin:

@@ -1,4 +1,5 @@
-from functions_for_ecommerce import *
+from tools_for_ecommerce import *
+from login import *
 
 while True:
     os.system('clear')

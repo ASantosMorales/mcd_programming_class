@@ -70,6 +70,3 @@ random.seed(1)
 products = {}
 for index in range(1, 9):
     products[index] = product(round(random.uniform(300, 2500), 2), random.randint(5, 50), random.choice([0, 10, 15, 25, 30, 50]))
-
-users = {}
-specific_user_shopping_cart = user_shopping_cart()
