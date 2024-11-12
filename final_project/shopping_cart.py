@@ -1,8 +1,11 @@
+from tools_for_ecommerce import *
+from products import *
+
 def adding_to_cart(user_choice):
     print('\n')
     print_centered('How many bottles do you want to add to your car?')
     product_id_user_choice = int(user_choice)
-    inventory = products[product_id_user_choice].inventory
+    inventory = products_dict[product_id_user_choice].inventory
     print_centered(f'Maximum of Tequila {product_id_user_choice} bottles is {inventory}')
     while True:
         print('\n')
@@ -34,10 +37,10 @@ def adding_to_cart_transaction(quantity, product_id, regular_price, discount_per
     current_user = users[current_user_id].adding_to_cart(quantity, product_id, regular_price, discount_percentage, total_price_with_discount, total_discount_amount)
 """
 def adding_to_cart_transaction(quantity, product_id):
-    regular_price = products[product_id].regular_price
-    discount_percentage = products[product_id].discount_percentage
-    event_price_with_discount = quantity * products[product_id].price_with_discount
-    event_discount_amount = quantity * products[product_id].discount_amount
+    regular_price = products_dict[product_id].regular_price
+    discount_percentage = products_dict[product_id].discount_percentage
+    event_price_with_discount = quantity * products_dict[product_id].price_with_discount
+    event_discount_amount = quantity * products_dict[product_id].discount_amount
     temporal_event_shopping_cart = event_shopping_cart(quantity, product_id, regular_price, discount_percentage, event_price_with_discount, event_discount_amount)
     specific_user_shopping_cart.add_last_shopping_cart_event_to_record(temporal_event_shopping_cart)
 
@@ -82,7 +85,7 @@ def print_user_cart_table(current_user):
         table.append([f'{index}', \
                     f'{shopping_cart.quantity}', \
                     f'Tequila_{shopping_cart.product_id}', \
-                    f'$ {(products[shopping_cart.product_id].price):.2f}', \
+                    f'$ {(products_dict[shopping_cart.product_id].price):.2f}', \
                     f'{shopping_cart.discount_percentage} %', \
                     f'$ {shopping_cart.event_price_with_discount:.2f}'])
         index += 1
@@ -160,3 +163,17 @@ def validate_confirm_deletion(input_str):
     else:
         validation = False
     return (validation)
+
+def validate_products_quantity(input_quantity):
+    pattern = r'^\d+$'
+    if re.match(pattern, input_quantity):
+        validation = True
+    else:
+        validation = False
+    return (validation)
+
+def validate_inventory(input_quantity, inventory_quantity):
+    inventory_ok = False
+    if input_quantity <= inventory_quantity:
+        inventory_ok = True
+    return (inventory_ok)

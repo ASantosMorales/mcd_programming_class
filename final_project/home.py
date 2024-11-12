@@ -1,11 +1,8 @@
 from tools_for_ecommerce import *
 from login import *
-"""
 from products import *
 from shopping_cart import *
 from history import *
-"""
-
 
 def home_page():
     while True:
