@@ -21,48 +21,67 @@ class customer:
         self.purchase_history = []
 
     def shopping_cart_deletion(self):
-        self.shopping_cart = []
+        self.shopping_cart = None
     
     def store_activity_to_history(self):
         timestamp = datetime.now()
-        self.timestamp = timestamp
-        self.history.append(shopping_cart)
+        self.shopping_cart.timestamp = timestamp
+        self.history.append(self.shopping_cart)
 
 class shopping_cart:
     def __init__(self):
-        self.quantity = []
-        self.product_id = []
-        self.regular_price = []
-        self.discount_percentage = []
-        self.net_amount = []
-        self.discounted_amount = []
+        self.shopping_cart_events = {}
         self.total_shopping_cart_products_quantity = None
         self.total_shopping_cart_amount = None
         self.total_shopping_cart_discount_applied_amount = None
         self.timestamp = None # Only used for confirmed purchase
 
     def add_articles_to_shopping_cart(self, quantity, product_id, regular_price, discount_percentage, net_amount, discounted_amount):
-        self.quantity.append(quantity)
-        self.product_id.append(product_id)
-        self.regular_price.append(regular_price)
-        self.discount_percentage.append(discount_percentage)
-        self.net_amount.append(net_amount)
-        self.discounted_amount.append(discounted_amount)
-        self.total_shopping_cart_products_quantity = sum(self.quantity)
-        self.total_shopping_cart_amount = sum(self.net_amount)
-        self.total_shopping_cart_discount_applied_amount = sum(self.discounted_amount)
+        if product_id in self.shopping_cart_events:
+            temporal_shopping_cart_event = self.shopping_cart_events[product_id]
+            temporal_shopping_cart_event.quantity = self.shopping_cart_events[product_id].quantity + quantity
+            temporal_shopping_cart_event.net_amount = self.shopping_cart_events[product_id].net_amount + net_amount
+            temporal_shopping_cart_event.discounted_amount = self.shopping_cart_events[product_id].discounted_amount + discounted_amount
+        else:
+            temporal_shopping_cart_event = shopping_cart_event(quantity, regular_price, discount_percentage, net_amount, discounted_amount)
+            # Temporal dictionary asignation
+            self.shopping_cart_events[product_id] = temporal_shopping_cart_event
+        # Totals calculation
+        self.total_shopping_cart_products_quantity = sum(instance.quantity for instance in self.shopping_cart_events.values())
+        self.total_shopping_cart_amount = sum(instance.net_amount for instance in self.shopping_cart_events.values())
+        self.total_shopping_cart_discount_applied_amount = sum(instance.discounted_amount for instance in self.shopping_cart_events.values())
 
     def remove_articles_from_shopping_cart(self, index):
         index = index - 1 # Python list offset
-        del self.quantity[index]
-        del self.product_id[index]
-        del self.regular_price[index]
-        del self.discount_percentage[index]
-        del self.net_amount[index]
-        del self.discounted_amount[index]
-        self.total_shopping_cart_products_quantity = sum(self.quantity)
-        self.total_shopping_cart_amount = sum(self.net_amount)
-        self.total_shopping_cart_discount_applied_amount = sum(self.discounted_amount)
+        # product_id deletion
+        del self.shopping_cart_events[index]
+        # Totals re-calculation
+        self.total_shopping_cart_products_quantity = sum(instance.quantity for instance in self.shopping_cart_events.values())
+        self.total_shopping_cart_amount = sum(instance.net_amount for instance in self.shopping_cart_events.values())
+        self.total_shopping_cart_discount_applied_amount = sum(instance.discounted_amount for instance in self.shopping_cart_events.values())
+
+class shopping_cart_event:
+    def __init__(self, quantity, regular_price, discount_percentage, net_amount, discounted_amount):
+        self.quantity = quantity
+        self.regular_price = regular_price
+        self.discount_percentage = discount_percentage
+        self.net_amount = net_amount
+        self.discounted_amount = discounted_amount
+
+
+class sequential_dict:
+    def __init__(self):
+        self.data = {}
+
+    def add(self, value):
+        key = len(self.data) + 1
+        self.data[key] = value
+
+    def remove(self, key):
+        if key in self.data:
+            del self.data[key]
+
+            self.data = {index + 1: value for index, value in enumerate(self.data.items())}
 
 """
 class event_shopping_cart:

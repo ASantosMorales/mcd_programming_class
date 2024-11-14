@@ -62,7 +62,7 @@ def cart_cover_page():
     current_user_entered_name = users[current_user_id].entered_name
     print_centered(f'This is your shopping cart {current_user_entered_name}')
     print('\n')
-    print_user_shopping_cart_table(users[current_user_id])
+    print_user_shopping_cart_table(users[current_user_id].shopping_cart)
     print('\n')
     print_centered('Type an option:')
     print('\n')
@@ -71,24 +71,24 @@ def cart_cover_page():
     print(identation * ' ' + '3. ' + colored('Go to home', 'red'))
     print('\n')
 
-def print_user_shopping_cart_table(current_user):
+def print_user_shopping_cart_table(shopping_cart):
     headers = ['Ref', 'Quantity', 'Product', 'Unit price', '% Discount', 'Final price']
     table = []
     index = 1
-    for shopping_cart_index in range(get_rows_number_in_shopping_cart(users[current_user])):
+    for key, shopping_cart_event in shopping_cart.shopping_cart_events.items():
         table.append([f'{index}', \
-                    f'{users[current_user].shopping_cart.quantity[shopping_cart_index]}', \
-                    f'Tequila_{users[current_user].shopping_cart.product_id[shopping_cart_index]}', \
-                    f'$ {users[current_user].shopping_cart.regular_price[shopping_cart_index]:.2f}', \
-                    f'{users[current_user].shopping_cart.discount_percentage[shopping_cart_index]} %', \
-                    f'$ {users[current_user].shopping_cart.net_amount[shopping_cart_index]:.2f}'])
+                    f'{shopping_cart_event.quantity}', \
+                    f'Tequila_{key}', \
+                    f'$ {shopping_cart_event.regular_price:.2f}', \
+                    f'{shopping_cart_event.discount_percentage} %', \
+                    f'$ {shopping_cart_event.net_amount:.2f}'])
         index += 1
     print(tabulate(table, headers, tablefmt = 'simple', stralign = 'center', numalign = 'center'))
     print('\n')
     print(18 * ' '+ 'Summary:')
-    print(tabulate([[f'Total products:  {users[current_user].shopping_cart.total_shopping_cart_products_quantity}'], \
-        [f'Total price (discount applied):  $ {users[current_user].shopping_cart.total_shopping_cart_amount:.2f}'], \
-        [f'Total discount applied:  $ {users[current_user].shopping_cart.total_shopping_cart_discount_applied_amount:.2f}']]))
+    print(tabulate([[f'Total products:  {shopping_cart.total_shopping_cart_products_quantity}'], \
+        [f'Total price (discount applied):  $ {shopping_cart.total_shopping_cart_amount:.2f}'], \
+        [f'Total discount applied:  $ {shopping_cart.total_shopping_cart_discount_applied_amount:.2f}']]))
 
 def edit_cart_section():
     print('\n')
@@ -99,7 +99,7 @@ def edit_cart_section():
         if (validate_edit_cart_input(edit_cart_user_choice)):
             edit_cart_user_choice = int(edit_cart_user_choice)
             current_user_id = active_user(users)
-            rows_in_user_cart = get_rows_number_in_cart(current_user_id)
+            rows_in_user_cart = get_rows_number_in_shopping_cart(users[current_user_id].shopping_cart)
             if (edit_cart_user_choice <= rows_in_user_cart):
                 user_cart_row_deletion(current_user_id, edit_cart_user_choice)
                 break
@@ -126,8 +126,8 @@ def user_cart_row_deletion(current_user_id, edit_cart_user_choice):
 def removing_event_from_cart_transaction(current_user_id, edit_cart_user_choice):
     users[current_user_id].cart.remove_specific_shopping_cart_record_index(edit_cart_user_choice)
 
-def get_rows_number_in_shopping_cart(current_user):
-    return (len(current_user.shopping_cart.quantity))
+def get_rows_number_in_shopping_cart(shopping_cart):
+    return (len(shopping_cart))
 
 def retreive_shopping_cart_data_by_index(shopping_cart_row, index):
     if (shopping_cart_row.quantity == []):
