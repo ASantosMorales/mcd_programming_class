@@ -36,6 +36,7 @@ def adding_to_cart_transaction(quantity, product_id):
     discounted_amount = quantity * products_dict[product_id].discount_amount
     if (users[current_user_id].shopping_cart == None):
         users[current_user_id].shopping_cart = shopping_cart()
+        users[current_user_id].shopping_cart.shopping_cart_indexes = sequential_dict()
     users[current_user_id].shopping_cart.add_articles_to_shopping_cart(quantity, product_id, regular_price, discount_percentage, net_amount, discounted_amount)
 
 def cart_page():
@@ -74,15 +75,13 @@ def cart_cover_page():
 def print_user_shopping_cart_table(shopping_cart):
     headers = ['Ref', 'Quantity', 'Product', 'Unit price', '% Discount', 'Final price']
     table = []
-    index = 1
-    for key, shopping_cart_event in shopping_cart.shopping_cart_events.items():
-        table.append([f'{index}', \
+    for key, shopping_cart_event in shopping_cart.shopping_cart_events.dicts.items():
+        table.append([f'{key}', \
                     f'{shopping_cart_event.quantity}', \
-                    f'Tequila_{key}', \
+                    f'Tequila_{shopping_cart_event.product_id}', \
                     f'$ {shopping_cart_event.regular_price:.2f}', \
                     f'{shopping_cart_event.discount_percentage} %', \
                     f'$ {shopping_cart_event.net_amount:.2f}'])
-        index += 1
     print(tabulate(table, headers, tablefmt = 'simple', stralign = 'center', numalign = 'center'))
     print('\n')
     print(18 * ' '+ 'Summary:')
@@ -96,15 +95,11 @@ def edit_cart_section():
     print('\n')
     while True:
         edit_cart_user_choice = input(identation * ' ' + 'Your selection: ')
-        if (validate_edit_cart_input(edit_cart_user_choice)):
-            edit_cart_user_choice = int(edit_cart_user_choice)
-            current_user_id = active_user(users)
-            rows_in_user_cart = get_rows_number_in_shopping_cart(users[current_user_id].shopping_cart)
-            if (edit_cart_user_choice <= rows_in_user_cart):
-                user_cart_row_deletion(current_user_id, edit_cart_user_choice)
-                break
-            else:
-                invalid_option()
+        edit_cart_user_choice = int(edit_cart_user_choice)
+        current_user_id = active_user(users)
+        if (validate_key_index_in_shopping_cart(edit_cart_user_choice, users[current_user_id].shopping_cart)):
+            user_cart_row_deletion(current_user_id, edit_cart_user_choice)
+            break
         else:
             invalid_option()
 
@@ -124,10 +119,19 @@ def user_cart_row_deletion(current_user_id, edit_cart_user_choice):
         invalid_option()
 
 def removing_event_from_cart_transaction(current_user_id, edit_cart_user_choice):
-    users[current_user_id].cart.remove_specific_shopping_cart_record_index(edit_cart_user_choice)
+    users[current_user_id].shopping_cart.remove_articles_from_shopping_cart(edit_cart_user_choice)
 
-def get_rows_number_in_shopping_cart(shopping_cart):
-    return (len(shopping_cart))
+
+#******************************
+#
+#          helpers
+#
+#******************************
+def get_shopping_cart_keys(shopping_cart):
+    list_of_keys = []
+    for key, event in shopping_cart.shopping_cart_events.items():
+        list_of_keys.append(key)
+    return (list_of_keys)
 
 def retreive_shopping_cart_data_by_index(shopping_cart_row, index):
     if (shopping_cart_row.quantity == []):
@@ -189,3 +193,11 @@ def validate_inventory(input_quantity, inventory_quantity):
     if input_quantity <= inventory_quantity:
         inventory_ok = True
     return (inventory_ok)
+
+def validate_key_index_in_shopping_cart(key_to_find, shopping_cart):
+    key_exists = False
+    for key, event in shopping_cart.shopping_cart_events.items():
+        if (key == key_to_find):
+            key_exists = False
+            break
+    return key_exists
