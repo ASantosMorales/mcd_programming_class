@@ -43,7 +43,7 @@ class shopping_cart:
             self.shopping_cart_events.add(temporal_shopping_cart_event)
         else:
             if (self.product_id_present(product_id)):
-                key = get_dict_key_of_product_id(product_id)
+                key = self.get_dict_key_of_product_id(product_id)
                 self.shopping_cart_events.dicts[key].quantity = self.shopping_cart_events.dicts[key].quantity + quantity
                 self.shopping_cart_events.dicts[key].net_amount = self.shopping_cart_events.dicts[key].net_amount + net_amount
                 self.shopping_cart_events.dicts[key].discounted_amount = self.shopping_cart_events.dicts[key].discounted_amount + discounted_amount
@@ -64,7 +64,7 @@ class shopping_cart:
         return return_value
 
     def get_dict_key_of_product_id(self, product_id):
-        for key, value in elf.shopping_cart_events.dicts.items():
+        for key, value in self.shopping_cart_events.dicts.items():
             if (value.product_id == product_id):
                 dict_key = key
         return key

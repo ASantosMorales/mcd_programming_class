@@ -95,11 +95,14 @@ def edit_cart_section():
     print('\n')
     while True:
         edit_cart_user_choice = input(identation * ' ' + 'Your selection: ')
-        edit_cart_user_choice = int(edit_cart_user_choice)
-        current_user_id = active_user(users)
-        if (validate_key_index_in_shopping_cart(edit_cart_user_choice, users[current_user_id].shopping_cart)):
-            user_cart_row_deletion(current_user_id, edit_cart_user_choice)
-            break
+        if (validate_edit_cart_input(edit_cart_user_choice)):
+            edit_cart_user_choice = int(edit_cart_user_choice)
+            current_user_id = active_user(users)
+            if (validate_key_index_in_shopping_cart(edit_cart_user_choice, users[current_user_id].shopping_cart)):
+                user_cart_row_deletion(current_user_id, edit_cart_user_choice)
+                break
+            else:
+                invalid_option()
         else:
             invalid_option()
 
@@ -196,8 +199,8 @@ def validate_inventory(input_quantity, inventory_quantity):
 
 def validate_key_index_in_shopping_cart(key_to_find, shopping_cart):
     key_exists = False
-    for key, event in shopping_cart.shopping_cart_events.items():
+    for key, event in shopping_cart.shopping_cart_events.dicts.items():
         if (key == key_to_find):
-            key_exists = False
+            key_exists = True
             break
     return key_exists
