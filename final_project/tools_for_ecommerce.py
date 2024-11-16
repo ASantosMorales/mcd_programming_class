@@ -38,7 +38,7 @@ identation = 4
 #******************************
 
 users = {}
-specific_user_shopping_cart = user_shopping_cart()
+session_shopping_cart = shopping_cart()
 
 #      products creation
 random.seed(1)
