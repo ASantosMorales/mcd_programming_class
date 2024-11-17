@@ -1,6 +1,6 @@
 from tools_for_ecommerce import *
 from login import active_user
-from invoice import print_invoice_purchase_data, print_invoice_table, print_invoice_total
+from invoice import get_invoice_purchase_data_table, get_invoice_products_table, get_invoice_total_table
 
 def history_page():
     os.system('clear')
@@ -25,7 +25,9 @@ def print_history_table(purchase_history, entered_name):
         timestamp = purchase_event.timestamp
         date = f'{timestamp.day:02}/{timestamp.month:02}/{timestamp.year}'
         time = f'{timestamp.hour:02}:{timestamp.minute:02}:{timestamp.second:02}'
-        print_invoice_purchase_data(purchase_event.invoice_number, date, time, entered_name)
-        print_invoice_table(purchase_event)
-        print_invoice_total(purchase_event)
+        print(get_invoice_purchase_data_table(purchase_event.invoice_number, date, time, entered_name))
+        print('\n')
+        print(get_invoice_products_table(purchase_event))
+        print('\n')
+        print(get_invoice_total_table(purchase_event))
         print('\n')
