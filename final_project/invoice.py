@@ -6,13 +6,14 @@ def invoice_page():
     timestamp = datetime.now()
     date = f'{timestamp.day:02}/{timestamp.month:02}/{timestamp.year}'
     time = f'{timestamp.hour:02}:{timestamp.minute:02}:{timestamp.second:02}'
+    invoice_number = random.randint(1, 1000000)
     current_user_id = active_user(users)
-    print_invoice_header(80)
-    print_invoice_purchase_data(date, time, users[current_user_id].entered_name)
+    print_invoice_header(70)
+    print_invoice_purchase_data(invoice_number, date, time, users[current_user_id].entered_name)
     print_invoice_table(users[current_user_id].shopping_cart)
     print_invoice_total(users[current_user_id].shopping_cart)
     inventory_update(users[current_user_id].shopping_cart)
-    user_shopping_cart_update(users[current_user_id])
+    user_shopping_cart_update(users[current_user_id], timestamp, invoice_number)
     print('\n')
     print_centered('Thanks for shopping with us!')
     print('\n')
@@ -24,8 +25,8 @@ def print_invoice_header(length_table):
 	print((int(length_table/2) - len(invoice_text))* ' ' + invoice_text)
 	print(length_table * '=')
 
-def print_invoice_purchase_data(date, time, entered_name):
-	table = [[f'Invoice No. {random.randint(1, 1000)}'], [f'Date: {date} {time}'], [f'Customer Name: {entered_name}']]
+def print_invoice_purchase_data(invoice_number, date, time, entered_name):
+	table = [[f'Invoice No. {invoice_number}'], [f'Date: {date} {time}'], [f'Customer Name: {entered_name}']]
 	print(tabulate(table, tablefmt = 'rst', stralign = 'left'))
 	print('\n')
 
@@ -43,7 +44,10 @@ def print_invoice_table(shopping_cart):
 	print('\n')
 
 def print_invoice_total(shopping_cart):
-	table = [[f'Subtotal (discount applied) = $ {shopping_cart.total_shopping_cart_amount:.02f}'], ['Taxes = $ 0.00'], [f'Total = $ {shopping_cart.total_shopping_cart_amount:.02f}']]
+	table = [[f'Subtotal (discount applied) = $ {shopping_cart.total_shopping_cart_amount:.02f}'], 
+			[f'Total discounted amount = $ {shopping_cart.total_shopping_cart_discount_applied_amount:.02f}'], 
+			['Taxes = $ 0.00'], 
+			[f'Total = $ {shopping_cart.total_shopping_cart_amount:.02f}']]
 	print(tabulate(table, tablefmt = 'rst', stralign = 'left'))
 	print('\n')
 
@@ -53,6 +57,6 @@ def inventory_update(shopping_cart):
         temporal_product_quantity = shopping_cart_event.quantity
         products_dict[temporal_product_id].purchasing(temporal_product_quantity)
     
-def user_shopping_cart_update(user_context):
-    user_context.store_activity_to_history()
+def user_shopping_cart_update(user_context, timestamp, invoice_number):
+    user_context.store_activity_to_history(timestamp, invoice_number)
     user_context.shopping_cart_deletion()

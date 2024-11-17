@@ -23,9 +23,9 @@ class customer:
     def shopping_cart_deletion(self):
         self.shopping_cart = None
     
-    def store_activity_to_history(self):
-        timestamp = datetime.now()
+    def store_activity_to_history(self, timestamp, invoice_number):
         self.shopping_cart.timestamp = timestamp
+        self.shopping_cart.invoice_number = invoice_number
         self.purchase_history.append(self.shopping_cart)
 
 class shopping_cart:
@@ -35,6 +35,7 @@ class shopping_cart:
         self.total_shopping_cart_amount = None
         self.total_shopping_cart_discount_applied_amount = None
         self.timestamp = None # Only used for confirmed purchase
+        self.invoice_number = 0
 
     def add_articles_to_shopping_cart(self, quantity, product_id, regular_price, discount_percentage, net_amount, discounted_amount):
         if (self.shopping_cart_events == None):

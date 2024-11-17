@@ -25,8 +25,7 @@ def print_history_table(purchase_history, entered_name):
         timestamp = purchase_event.timestamp
         date = f'{timestamp.day:02}/{timestamp.month:02}/{timestamp.year}'
         time = f'{timestamp.hour:02}:{timestamp.minute:02}:{timestamp.second:02}'
-        print_invoice_purchase_data(date, time, entered_name)
+        print_invoice_purchase_data(purchase_event.invoice_number, date, time, entered_name)
         print_invoice_table(purchase_event)
         print_invoice_total(purchase_event)
-        print('\n')
         print('\n')

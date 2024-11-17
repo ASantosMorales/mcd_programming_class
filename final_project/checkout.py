@@ -1,6 +1,5 @@
 from tools_for_ecommerce import *
 from login import active_user
-from payment import payment_confirmation_page
 from invoice import invoice_page
 
 def checkout_page():
