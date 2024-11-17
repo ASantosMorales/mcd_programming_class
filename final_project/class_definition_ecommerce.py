@@ -26,7 +26,7 @@ class customer:
     def store_activity_to_history(self):
         timestamp = datetime.now()
         self.shopping_cart.timestamp = timestamp
-        self.history.append(self.shopping_cart)
+        self.purchase_history.append(self.shopping_cart)
 
 class shopping_cart:
     def __init__(self):
