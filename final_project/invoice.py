@@ -27,6 +27,7 @@ def print_invoice_header(length_table):
 def print_invoice_purchase_data(date, time, entered_name):
 	table = [[f'Invoice No. {random.randint(1, 1000)}'], [f'Date: {date} {time}'], [f'Customer Name: {entered_name}']]
 	print(tabulate(table, tablefmt = 'rst', stralign = 'left'))
+	print('\n')
 
 def print_invoice_table(shopping_cart):
 	headers = ['Ref', 'Quantity', 'Product', 'Unit price', '% Discount', 'Final price']
@@ -39,10 +40,12 @@ def print_invoice_table(shopping_cart):
 					f'{shopping_cart_event.discount_percentage} %', \
 					f'$ {shopping_cart_event.net_amount:.2f}'])
 	print(tabulate(table, headers, tablefmt = 'simple', stralign = 'center', numalign = 'center'))
+	print('\n')
 
 def print_invoice_total(shopping_cart):
 	table = [[f'Subtotal (discount applied) = $ {shopping_cart.total_shopping_cart_amount:.02f}'], ['Taxes = $ 0.00'], [f'Total = $ {shopping_cart.total_shopping_cart_amount:.02f}']]
 	print(tabulate(table, tablefmt = 'rst', stralign = 'left'))
+	print('\n')
 
 def inventory_update(shopping_cart):
     for shopping_cart_event in shopping_cart.shopping_cart_events.dicts.values():
