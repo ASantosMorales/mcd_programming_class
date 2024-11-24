@@ -12,6 +12,9 @@ class product:
     def purchasing(self, purchased_quantity):
         self.inventory -= purchased_quantity
 
+    def return_to_inventory(self, returned_quantity):
+        self.inventory += returned_quantity
+
 class customer:
     def __init__(self, customer_id, entered_name):
         self.customer_id = customer_id
@@ -31,9 +34,9 @@ class customer:
 class shopping_cart:
     def __init__(self):
         self.shopping_cart_events = None
-        self.total_shopping_cart_products_quantity = None
-        self.total_shopping_cart_amount = None
-        self.total_shopping_cart_discount_applied_amount = None
+        self.total_shopping_cart_products_quantity = 0
+        self.total_shopping_cart_amount = 0
+        self.total_shopping_cart_discount_applied_amount = 0
         self.timestamp = None # Only used for confirmed purchase
         self.invoice_number = 0
 
@@ -68,6 +71,7 @@ class shopping_cart:
         for key, value in self.shopping_cart_events.dicts.items():
             if (value.product_id == product_id):
                 dict_key = key
+                break
         return key
 
     def remove_articles_from_shopping_cart(self, key):

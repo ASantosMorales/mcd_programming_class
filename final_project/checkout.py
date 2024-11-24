@@ -32,7 +32,7 @@ def checkout_cover_page():
     print_centered('Type an option:')
     print('\n')
     print(identation * ' ' + '1. ' + colored('Confirm purchase and get your invoice', 'blue'))
-    print(identation * ' ' + '2. ' + colored('Return to your cart', 'red'))
+    print(identation * ' ' + '2. ' + colored('Return to home', 'red'))
     print('\n')
 
 def print_user_shopping_cart_table_for_checkout(shopping_cart):

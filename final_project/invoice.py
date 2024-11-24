@@ -7,6 +7,7 @@ def invoice_page():
     timestamp = datetime.now()
     date = f'{timestamp.day:02}/{timestamp.month:02}/{timestamp.year}'
     time = f'{timestamp.hour:02}:{timestamp.minute:02}:{timestamp.second:02}'
+    random.seed()
     invoice_number = random.randint(1, 1000000)
     current_user_id = active_user(users)
     print_invoice_header(70)
@@ -16,7 +17,6 @@ def invoice_page():
     print('\n')
     print(get_invoice_total_table(users[current_user_id].shopping_cart))
     store_history_in_log_file(invoice_number, date, time, users[current_user_id].entered_name, users[current_user_id].shopping_cart)
-    inventory_update(users[current_user_id].shopping_cart)
     user_shopping_cart_update(users[current_user_id], timestamp, invoice_number)
     print('\n')
     print_centered('Thanks for shopping with us!')
