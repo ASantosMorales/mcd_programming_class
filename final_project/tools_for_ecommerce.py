@@ -7,6 +7,7 @@ import re
 import numpy as np
 from termcolor import colored
 from tabulate import tabulate
+from class_definition_ecommerce import *
 
 def print_centered(text):
     if len(text) > total_margin:
@@ -37,4 +38,10 @@ identation = 4
 #******************************
 
 users = {}
-specific_user_shopping_cart = user_shopping_cart()
+session_shopping_cart = shopping_cart()
+
+#      products creation
+random.seed(1)
+products_dict = {}
+for index in range(1, 9):
+    products_dict[index] = product(round(random.uniform(300, 2500), 2), random.randint(5, 50), random.choice([0, 10, 15, 25, 30, 50]))

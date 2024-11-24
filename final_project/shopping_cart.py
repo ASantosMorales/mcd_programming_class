@@ -1,71 +1,82 @@
+from tools_for_ecommerce import *
+from products import *
+from login import active_user
+from checkout import checkout_page
+
 def adding_to_cart(user_choice):
     print('\n')
-    print_centered('How many bottles do you want to add to your car?')
     product_id_user_choice = int(user_choice)
-    inventory = products[product_id_user_choice].inventory
-    print_centered(f'Maximum of Tequila {product_id_user_choice} bottles is {inventory}')
-    while True:
-        print('\n')
-        quantity_to_cart = input(identation * ' ' + 'Type the number of bottles: ')
-        if (validate_products_quantity(quantity_to_cart)):
-            quantity_to_cart = int(quantity_to_cart)
-            if (validate_inventory(quantity_to_cart, inventory)):
-                """
-                total_price_with_discount = round(quantity_to_cart * products[item_user_choice].price_with_discount, 2)
-                total_discount_amount = round(quantity_to_cart * products[item_user_choice].discount_amount, 2)
-                adding_to_cart_transaction(quantity_to_cart, item_user_choice, products[item_user_choice].price, products[item_user_choice].discount, total_price_with_discount, total_discount_amount)
-                """
-                adding_to_cart_transaction(quantity_to_cart, product_id_user_choice)
-                print('\n')
-                print_centered(f'You added {quantity_to_cart} bottles of Tequila {product_id_user_choice} to your cart.')
-                print('\n')
-                print_centered("Let's continue shopping!!!")
-                time.sleep(2)
-                break
+    inventory = products_dict[product_id_user_choice].inventory
+    if (inventory > 0):
+        print_centered('How many bottles do you want to add to your car?')
+        print_centered(f'Maximum of Tequila {product_id_user_choice} bottles is {inventory}')
+        while True:
+            print('\n')
+            quantity_to_cart = input(identation * ' ' + 'Type the number of bottles: ')
+            if (validate_products_quantity(quantity_to_cart)):
+                quantity_to_cart = int(quantity_to_cart)
+                if (validate_inventory(quantity_to_cart, inventory)):
+                    adding_to_cart_transaction(quantity_to_cart, product_id_user_choice)
+                    print('\n')
+                    print_centered(f'You added {quantity_to_cart} bottles of Tequila {product_id_user_choice} to your cart.')
+                    print('\n')
+                    print_centered("Let's continue shopping!!!")
+                    time.sleep(2)
+                    break
+                else:
+                    print('\n')
+                    print_centered('You exceded the stock, try again!')
+                    time.sleep(2)
+                    break
             else:
-                print('\n')
-                print_centered('You exceded the stock, try again!')
-        else:
-            invalid_option()
+                invalid_option()
+    else:
+        print_centered('Product not available, try again!')
+        time.sleep(2)
 
-"""
-def adding_to_cart_transaction(quantity, product_id, regular_price, discount_percentage, total_price_with_discount, total_discount_amount):
-    current_user_id = active_user(users)
-    current_user = users[current_user_id].adding_to_cart(quantity, product_id, regular_price, discount_percentage, total_price_with_discount, total_discount_amount)
-"""
 def adding_to_cart_transaction(quantity, product_id):
-    regular_price = products[product_id].regular_price
-    discount_percentage = products[product_id].discount_percentage
-    event_price_with_discount = quantity * products[product_id].price_with_discount
-    event_discount_amount = quantity * products[product_id].discount_amount
-    temporal_event_shopping_cart = event_shopping_cart(quantity, product_id, regular_price, discount_percentage, event_price_with_discount, event_discount_amount)
-    specific_user_shopping_cart.add_last_shopping_cart_event_to_record(temporal_event_shopping_cart)
+    current_user_id = active_user(users)
+    products_dict[product_id].purchasing(quantity)
+    regular_price = products_dict[product_id].regular_price
+    discount_percentage = products_dict[product_id].discount_percentage
+    net_amount = quantity * products_dict[product_id].price_with_discount
+    discounted_amount = quantity * products_dict[product_id].discount_amount
+    if (users[current_user_id].shopping_cart == None):
+        users[current_user_id].shopping_cart = shopping_cart()
+        users[current_user_id].shopping_cart.shopping_cart_indexes = sequential_dict()
+    users[current_user_id].shopping_cart.add_articles_to_shopping_cart(quantity, product_id, regular_price, discount_percentage, net_amount, discounted_amount)
 
 def cart_page():
     while True:
         os.system('clear')
-        cart_cover_page()
+        current_user_id = active_user(users)
 
-        cart_user_choice = input(identation * ' ' + 'Your choice: ')
-        
-        if (validate_cart_input(cart_user_choice)):
-            if (cart_user_choice == '1'):
-                checkout_page()
-                break
-            if (cart_user_choice == '2'):
-                edit_cart_section()
-            else:
-                break
+        if validate_shopping_cart_empty(users[current_user_id].shopping_cart):
+            print('\n')
+            print_centered('Your shopping cart is empty.\n\n')
+            input(identation * ' ' + 'Press enter to return to home...')
+            break
         else:
-            invalid_option()
+            cart_cover_page(current_user_id)
+            cart_user_choice = input(identation * ' ' + 'Your choice: ')
+        
+            if (validate_cart_input(cart_user_choice)):
+                if (cart_user_choice == '1'):
+                    checkout_page()
+                    break
+                elif (cart_user_choice == '2'):
+                    edit_cart_section()
+                else:
+                    break
+            else:
+                invalid_option()
 
-def cart_cover_page():
+def cart_cover_page(current_user_id):
     print('\n')
-    current_user_id = active_user(users)
     current_user_entered_name = users[current_user_id].entered_name
     print_centered(f'This is your shopping cart {current_user_entered_name}')
     print('\n')
-    print_user_cart_table(users[current_user_id])
+    print_user_shopping_cart_table(users[current_user_id].shopping_cart)
     print('\n')
     print_centered('Type an option:')
     print('\n')
@@ -74,22 +85,22 @@ def cart_cover_page():
     print(identation * ' ' + '3. ' + colored('Go to home', 'red'))
     print('\n')
 
-def print_user_cart_table(current_user):
+def print_user_shopping_cart_table(shopping_cart):
     headers = ['Ref', 'Quantity', 'Product', 'Unit price', '% Discount', 'Final price']
     table = []
-    index = 1
-    for shopping_cart in current_user.cart.record:
-        table.append([f'{index}', \
-                    f'{shopping_cart.quantity}', \
-                    f'Tequila_{shopping_cart.product_id}', \
-                    f'$ {(products[shopping_cart.product_id].price):.2f}', \
-                    f'{shopping_cart.discount_percentage} %', \
-                    f'$ {shopping_cart.event_price_with_discount:.2f}'])
-        index += 1
+    for key, shopping_cart_event in shopping_cart.shopping_cart_events.dicts.items():
+        table.append([f'{key}', \
+                    f'{shopping_cart_event.quantity}', \
+                    f'Tequila_{shopping_cart_event.product_id}', \
+                    f'$ {shopping_cart_event.regular_price:.2f}', \
+                    f'{shopping_cart_event.discount_percentage} %', \
+                    f'$ {shopping_cart_event.net_amount:.2f}'])
     print(tabulate(table, headers, tablefmt = 'simple', stralign = 'center', numalign = 'center'))
     print('\n')
     print(18 * ' '+ 'Summary:')
-    print(tabulate([[f'Total products:  {current_user.total_products_in_shopping_cart}'], [f'Total price (discount applied):  $ {current_user.total_amount_in_shopping_cart:.2f}'], [f'Total discount applied:  $ {current_user.total_discount_applied_in_shopping_cart:.2f}']]))
+    print(tabulate([[f'Total products:  {shopping_cart.total_shopping_cart_products_quantity}'], \
+        [f'Total price (discount applied):  $ {shopping_cart.total_shopping_cart_amount:.2f}'], \
+        [f'Total discount applied:  $ {shopping_cart.total_shopping_cart_discount_applied_amount:.2f}']]))
 
 def edit_cart_section():
     print('\n')
@@ -100,8 +111,7 @@ def edit_cart_section():
         if (validate_edit_cart_input(edit_cart_user_choice)):
             edit_cart_user_choice = int(edit_cart_user_choice)
             current_user_id = active_user(users)
-            rows_in_user_cart = get_rows_number_in_cart(current_user_id)
-            if (edit_cart_user_choice <= rows_in_user_cart):
+            if (validate_key_index_in_shopping_cart(edit_cart_user_choice, users[current_user_id].shopping_cart)):
                 user_cart_row_deletion(current_user_id, edit_cart_user_choice)
                 break
             else:
@@ -120,16 +130,44 @@ def user_cart_row_deletion(current_user_id, edit_cart_user_choice):
     user_confirm_deletion_choice = input(identation * ' ' + 'Your selection: ')
     if (validate_confirm_deletion(user_confirm_deletion_choice)):
         if (user_confirm_deletion_choice == '1'):
-            quantity = users[current_user_id].cart[edit_cart_user_choice - 1].quantity
-            total_price_with_discount = users[current_user_id].cart[edit_cart_user_choice - 1].total_price_with_discount
-            total_discount_amount = users[current_user_id].cart[edit_cart_user_choice - 1].total_discount_amount
-            users[current_user_id].remove_from_cart(quantity, price_with_discount, discount_amount)
-            del users[current_user_id].cart[edit_cart_user_choice - 1]
+            removing_event_from_cart_transaction(current_user_id, edit_cart_user_choice)
     else:
         invalid_option()
 
-def get_rows_number_in_cart(current_user_id):
-    return (len(users[current_user_id].cart))
+def removing_event_from_cart_transaction(current_user_id, edit_cart_user_choice):
+    product_id = users[current_user_id].shopping_cart.shopping_cart_events.dicts[edit_cart_user_choice].product_id
+    quantity = users[current_user_id].shopping_cart.shopping_cart_events.dicts[edit_cart_user_choice].quantity
+    products_dict[product_id].return_to_inventory(quantity)
+    users[current_user_id].shopping_cart.remove_articles_from_shopping_cart(edit_cart_user_choice)
+
+
+#******************************
+#
+#          helpers
+#
+#******************************
+def get_shopping_cart_keys(shopping_cart):
+    list_of_keys = []
+    for key, event in shopping_cart.shopping_cart_events.items():
+        list_of_keys.append(key)
+    return (list_of_keys)
+
+def retreive_shopping_cart_data_by_index(shopping_cart_row, index):
+    if (shopping_cart_row.quantity == []):
+        quantity = 0
+        product_id = 0
+        regular_price = 0
+        discount_percentage = 0
+        net_amount = 0
+        discounted_amount = 0
+    else:
+        quantity = shopping_cart_row.quantity[index]
+        product_id = shopping_cart_row.product_id[index]
+        regular_price = shopping_cart_row.regular_price[index]
+        discount_percentage = shopping_cart_row.discount_percentage[index]
+        net_amount = shopping_cart_row.net_amount[index]
+        discounted_amount = shopping_cart_row.discounted_amount[index]
+    return (quantity, product_id, regular_price, discount_percentage, net_amount, discounted_amount)
 
 #******************************
 #
@@ -158,5 +196,35 @@ def validate_confirm_deletion(input_str):
     if re.match(pattern, input_str):
         validation = True
     else:
+        validation = False
+    return (validation)
+
+def validate_products_quantity(input_quantity):
+    pattern = r'^(?:[1-9]|[1-4][0-9]|50)$'
+    if re.match(pattern, input_quantity):
+        validation = True
+    else:
+        validation = False
+    return (validation)
+
+def validate_inventory(input_quantity, inventory_quantity):
+    inventory_ok = False
+    if input_quantity <= inventory_quantity:
+        inventory_ok = True
+    return (inventory_ok)
+
+def validate_key_index_in_shopping_cart(key_to_find, shopping_cart):
+    key_exists = False
+    for key, event in shopping_cart.shopping_cart_events.dicts.items():
+        if (key == key_to_find):
+            key_exists = True
+            break
+    return (key_exists)
+
+def validate_shopping_cart_empty(shopping_cart):
+    validation = True
+    if shopping_cart == None:
+        validation = True
+    elif shopping_cart.total_shopping_cart_products_quantity > 0:
         validation = False
     return (validation)

@@ -1,3 +1,6 @@
+from tools_for_ecommerce import *
+from shopping_cart import *
+
 def products_page():
     while True:
         os.system('clear')
@@ -27,7 +30,7 @@ def products_cover_page():
 def print_products_table():
     headers = ['ID', 'Product', 'Regular price', 'Discount', 'Final price', 'Stock']
     table = []
-    for key, item in products.items():
+    for key, item in products_dict.items():
         table.append([f'{key}', f'Tequila_{key}', f'$ {item.regular_price:.2f}', f'{item.discount_percentage} %', f'$ {item.price_with_discount:.2f}', f'{item.inventory} bottles'])
     print(tabulate(table, headers, tablefmt = 'simple', stralign = 'center', numalign = 'center'))
 
@@ -44,32 +47,3 @@ def validate_products_input(input_str):
     else:
         validation = False
     return (validation)
-
-def validate_products_quantity(input_quantity):
-    pattern = r'^\d+$'
-    if re.match(pattern, input_quantity):
-        validation = True
-    else:
-        validation = False
-    return (validation)
-
-def validate_inventory(input_quantity, inventory_quantity):
-    inventory_ok = False
-    if input_quantity <= inventory_quantity:
-        inventory_ok = True
-    return (inventory_ok)
-
-
-#******************************
-#
-#      products creation
-#
-#******************************
-
-random.seed(1)
-products = {}
-for index in range(1, 9):
-    products[index] = product(round(random.uniform(300, 2500), 2), random.randint(5, 50), random.choice([0, 10, 15, 25, 30, 50]))
-
-users = {}
-specific_user_shopping_cart = user_shopping_cart()

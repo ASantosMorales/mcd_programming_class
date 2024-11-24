@@ -1,3 +1,5 @@
+from tools_for_ecommerce import *
+
 def login_page():
     print_banner()
     print('\n')
@@ -50,7 +52,7 @@ def user_name_already_exists(user_name, users_dictionary):
     return(already_exists)
 
 def create_user(user_name_formated, user_name_entered, users_dictionary):
-    users_dictionary[user_name_formated] = customer(user_name_formated, user_name_entered, specific_user_shopping_cart)
+    users_dictionary[user_name_formated] = customer(user_name_formated, user_name_entered)
 
 def activate_user(user_name, users_dictionary):
     users_dictionary[user_name].is_active = True
